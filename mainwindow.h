@@ -23,6 +23,10 @@ public:
     settings *appSettings;
     QVector<QGroupBox*> axesGroup;
 
+    void setSettingsTab();
+
+    void windowSetup();
+
 private slots:
 
     void on_connectButton_clicked();
@@ -46,7 +50,7 @@ private slots:
 
     void on_enableButton_clicked();
 
-    void setSettingsTab();
+
 
     void on_optionBox_currentIndexChanged(const QString &arg1);
 

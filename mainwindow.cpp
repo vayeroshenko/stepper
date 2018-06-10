@@ -16,18 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->statusLine->setText(appSettings->connectionMessage);
 
-    axesGroup.append(ui->xAxisGroup);
-    axesGroup.append(ui->yAxisGroup);
-    axesGroup.append(ui->zAxisGroup);
-    axesGroup.append(ui->aAxisGroup);
-
-    int nAxes = appSettings->getNAxes();
-
-    if (nAxes > 2) this->setMinimumSize(860,585);
-    else this->setMinimumSize(860,360);
-
-    for (int i = 3; i >= nAxes; --i)
-        axesGroup[i]->hide();
+    windowSetup();
 
     if (appSettings->port->serialPort != NULL){
         connect(appSettings->port->serialPort, SIGNAL(error(QSerialPort::SerialPortError)), appSettings->port, SLOT(handleError(QSerialPort::SerialPortError)));
@@ -72,9 +61,9 @@ void MainWindow::setSettingsTab()
     ui->settingsUnitsnitsLabel->setVisible(false);
     nAxesValidator = new QIntValidator(1, 4, this);
     sprValidator = new QIntValidator(1, 5000, this);
-    cmprValidator = new QDoubleValidator(0, 10, this);
-    maxvValidator = new QDoubleValidator(0, 10, this);;
-    accelValidator = new QDoubleValidator(0, 10, this);;
+    cmprValidator = new QDoubleValidator(0, 10, 3, this);
+    maxvValidator = new QDoubleValidator(0, 10, 3, this);;
+    accelValidator = new QDoubleValidator(0, 10, 3, this);;
 
 }
 
@@ -173,7 +162,29 @@ void MainWindow::on_setParameterButton_clicked()
 {
     if (curSetting == "" || curSetting == "Select option...") return;
     else if (curSetting == "Number of axes"){
-        if (ui->parameterValueLine->text().toInt() = 0) return;
+        if (ui->parameterValueLine->text().toInt() == 0) return;
         appSettings->naxes = ui->parameterValueLine->text().toInt();
+        windowSetup();
     }
+}
+
+void MainWindow::windowSetup()
+{
+    axesGroup.clear();
+    axesGroup.append(ui->xAxisGroup);
+    axesGroup.append(ui->yAxisGroup);
+    axesGroup.append(ui->zAxisGroup);
+    axesGroup.append(ui->aAxisGroup);
+
+    int nAxes = appSettings->getNAxes();
+
+    if (nAxes > 2) this->setMinimumSize(860,585);
+    else this->setMinimumSize(860,360);
+
+    for (auto i: axesGroup) i->setVisible(true);
+
+    for (int i = 3; i >= nAxes; --i)
+        axesGroup[i]->setVisible(false);
+
+    resize(0,0);
 }
