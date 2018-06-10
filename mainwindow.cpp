@@ -62,8 +62,10 @@ void MainWindow::setSettingsTab()
     nAxesValidator = new QIntValidator(1, 4, this);
     sprValidator = new QIntValidator(1, 5000, this);
     cmprValidator = new QDoubleValidator(0, 10, 3, this);
-    maxvValidator = new QDoubleValidator(0, 10, 3, this);;
-    accelValidator = new QDoubleValidator(0, 10, 3, this);;
+    maxvValidator = new QDoubleValidator(0, 10, 3, this);
+    accelValidator = new QDoubleValidator(0, 10, 3, this);
+
+    toggleSettings(false);
 
 }
 
@@ -141,8 +143,10 @@ void MainWindow::on_enableButton_clicked()
 
 void MainWindow::on_optionBox_currentIndexChanged(const QString &arg1)
 {
+
     ui->parameterValueLine->setText("");
     this->curSetting = arg1;
+    updatePlaceholder();
     if (curSetting == "Number of axes") {
         ui->axisBox->setVisible(false);
         ui->parameterValueLine->setValidator(nAxesValidator);
@@ -151,9 +155,21 @@ void MainWindow::on_optionBox_currentIndexChanged(const QString &arg1)
     }
 }
 
+void MainWindow::updatePlaceholder()
+{
+    if (curSetting == "Number of axes") {
+        ui->parameterValueLine->setPlaceholderText(QString::number(appSettings->naxes));
+    } else if (curSetting == "Steps per rotation") {
+        if (ui->axisBox->currentIndex() == 0) ui->parameterValueLine->setPlaceholderText("");
+        else ui->parameterValueLine->setPlaceholderText(QString::number(appSettings->spr[ui->axisBox->currentIndex()-1]));
+    }
+}
+
 void MainWindow::on_axisBox_currentIndexChanged(const QString &arg1)
 {
+    updatePlaceholder();
     this->curAxis = arg1;
+
 
 
 }
@@ -166,6 +182,7 @@ void MainWindow::on_setParameterButton_clicked()
         appSettings->naxes = ui->parameterValueLine->text().toInt();
         windowSetup();
     }
+    toggleSettings(false);
 }
 
 void MainWindow::windowSetup()
@@ -193,4 +210,18 @@ void MainWindow::updatePos()
 {
     double xposcm = appSettings->pos[0] * appSettings->cmpr[0] / appSettings->spr[0];
     ui->xPositionLine->setText(QString::number(xposcm, 'f', 6));
+}
+
+void MainWindow::toggleSettings(bool state)
+{
+    ui->setParameterButton->setEnabled(state);
+    ui->defaultsButton->setEnabled(state);
+    ui->openButton->setEnabled(state);
+}
+
+void MainWindow::on_settingsUnlockButton_clicked()
+{
+    if (ui->settingsPasswordLine->text() == "unlock"){
+        toggleSettings(true);
+    }
 }

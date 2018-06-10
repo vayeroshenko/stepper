@@ -165,6 +165,7 @@ void settings::monitorPort()
         message.pop_front();
         startI --;
     }
+    if (message.isEmpty()) return;
 
 //    for (auto i:message){
 //        msg = i;

@@ -27,6 +27,8 @@ public:
 
     void windowSetup();
 
+    void toggleSettings(bool state);
+
 
 
 private slots:
@@ -61,6 +63,9 @@ private slots:
     void on_setParameterButton_clicked();
 
     void updatePos();
+
+    void on_settingsUnlockButton_clicked();
+    void updatePlaceholder();
 
 private:
     Ui::MainWindow *ui;
