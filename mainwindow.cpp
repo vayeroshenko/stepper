@@ -70,6 +70,8 @@ void MainWindow::setSettingsTab()
     ui->axisBox->addItem("Fourth axis","axis4");
 
     ui->settingsUnitsnitsLabel->setVisible(false);
+    nAxesValidator = new QIntValidator(1, 4, this);
+
 }
 
 
@@ -146,9 +148,11 @@ void MainWindow::on_enableButton_clicked()
 
 void MainWindow::on_optionBox_currentIndexChanged(const QString &arg1)
 {
+    ui->parameterValueLine->setText("");
     this->curSetting = arg1;
     if (curSetting == "Number of axes") {
         ui->axisBox->setVisible(false);
+        ui->parameterValueLine->setValidator(nAxesValidator);
     } else if (curSetting == "Steps per rotation") {
         ui->axisBox->setVisible(true);
     }
@@ -164,5 +168,8 @@ void MainWindow::on_axisBox_currentIndexChanged(const QString &arg1)
 void MainWindow::on_setParameterButton_clicked()
 {
     if (curSetting == "" || curSetting == "Select option...") return;
-    else if (curSetting == "Number of axes") appSettings->
+    else if (curSetting == "Number of axes"){
+        if (ui->parameterValueLine->text().toInt() = 0) return;
+        appSettings->naxes = ui->parameterValueLine->text().toInt();
+    }
 }

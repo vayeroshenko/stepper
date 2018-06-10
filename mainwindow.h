@@ -5,6 +5,7 @@
 #include <settings.h>
 #include <QWidget>
 #include <QGroupBox>
+#include <QValidator>
 #include <QtSerialPort/QSerialPort>
 
 namespace Ui {
@@ -56,6 +57,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
+    QIntValidator *nAxesValidator;
     QString curSetting = "";
     QString curAxis = "";
 };

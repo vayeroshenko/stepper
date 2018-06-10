@@ -28,6 +28,8 @@ public:
     void disableMotors();
     void checkSerial();
 
+    int naxes = 4;              // number of active axes
+
     double spr[4];               // steps per rotation
     double cmpr[4];              // step of moving screw (cm/rotation)
     double maxv[4];              // max velocity
@@ -37,7 +39,7 @@ public:
 private:
     QString filename = "conf";  // name of configuration file
 
-    int naxes = 4;              // number of active axes
+
 
     // [X,Y,Z,A] axes
 
