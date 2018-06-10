@@ -5,6 +5,7 @@
 #include <settings.h>
 #include <QWidget>
 #include <QGroupBox>
+#include <QValidator>
 #include <QtSerialPort/QSerialPort>
 
 namespace Ui {
@@ -21,6 +22,14 @@ public:
 
     settings *appSettings;
     QVector<QGroupBox*> axesGroup;
+
+    void setSettingsTab();
+
+    void windowSetup();
+
+    void toggleSettings(bool state);
+
+
 
 private slots:
 
@@ -45,7 +54,7 @@ private slots:
 
     void on_enableButton_clicked();
 
-    void setSettingsTab();
+
 
     void on_optionBox_currentIndexChanged(const QString &arg1);
 
@@ -53,8 +62,19 @@ private slots:
 
     void on_setParameterButton_clicked();
 
+    void updatePos();
+
+    void on_settingsUnlockButton_clicked();
+    void updatePlaceholder();
+
 private:
     Ui::MainWindow *ui;
+
+    QIntValidator *nAxesValidator;
+    QIntValidator *sprValidator;
+    QDoubleValidator *cmprValidator;
+    QDoubleValidator *maxvValidator;
+    QDoubleValidator *accelValidator;
 
     QString curSetting = "";
     QString curAxis = "";

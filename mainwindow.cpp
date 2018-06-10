@@ -16,28 +16,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->statusLine->setText(appSettings->connectionMessage);
 
-    axesGroup.append(ui->xAxisGroup);
-    axesGroup.append(ui->yAxisGroup);
-    axesGroup.append(ui->zAxisGroup);
-    axesGroup.append(ui->aAxisGroup);
-
-    int nAxes = appSettings->getNAxes();
-
-    if (nAxes > 2) this->setMinimumSize(860,585);
-    else this->setMinimumSize(860,360);
-
-    for (int i = 3; i >= nAxes; --i)
-        axesGroup[i]->hide();
+    windowSetup();
 
     if (appSettings->port->serialPort != NULL){
         connect(appSettings->port->serialPort, SIGNAL(error(QSerialPort::SerialPortError)), appSettings->port, SLOT(handleError(QSerialPort::SerialPortError)));
     }
 
-//    // run in main loop
-//    auto timer = new QTimer(parent);
-//    connect(timer, &QTimer::timeout, appSettings, [this]{appSettings->monitorPort();});
-//    timer->start(10000);
-//    //
+    connect(appSettings, &settings::newData, this, &MainWindow::updatePos);
+
+
+
+
 
     if (appSettings->motorEnabled)
         ui->enableButton->setText("Disable motors");
@@ -70,6 +59,14 @@ void MainWindow::setSettingsTab()
     ui->axisBox->addItem("Fourth axis","axis4");
 
     ui->settingsUnitsnitsLabel->setVisible(false);
+    nAxesValidator = new QIntValidator(1, 4, this);
+    sprValidator = new QIntValidator(1, 5000, this);
+    cmprValidator = new QDoubleValidator(0, 10, 3, this);
+    maxvValidator = new QDoubleValidator(0, 10, 3, this);
+    accelValidator = new QDoubleValidator(0, 10, 3, this);
+
+    toggleSettings(false);
+
 }
 
 
@@ -146,17 +143,33 @@ void MainWindow::on_enableButton_clicked()
 
 void MainWindow::on_optionBox_currentIndexChanged(const QString &arg1)
 {
+
+    ui->parameterValueLine->setText("");
     this->curSetting = arg1;
+    updatePlaceholder();
     if (curSetting == "Number of axes") {
         ui->axisBox->setVisible(false);
+        ui->parameterValueLine->setValidator(nAxesValidator);
     } else if (curSetting == "Steps per rotation") {
         ui->axisBox->setVisible(true);
     }
 }
 
+void MainWindow::updatePlaceholder()
+{
+    if (curSetting == "Number of axes") {
+        ui->parameterValueLine->setPlaceholderText(QString::number(appSettings->naxes));
+    } else if (curSetting == "Steps per rotation") {
+        if (ui->axisBox->currentIndex() == 0) ui->parameterValueLine->setPlaceholderText("");
+        else ui->parameterValueLine->setPlaceholderText(QString::number(appSettings->spr[ui->axisBox->currentIndex()-1]));
+    }
+}
+
 void MainWindow::on_axisBox_currentIndexChanged(const QString &arg1)
 {
+    updatePlaceholder();
     this->curAxis = arg1;
+
 
 
 }
@@ -164,5 +177,51 @@ void MainWindow::on_axisBox_currentIndexChanged(const QString &arg1)
 void MainWindow::on_setParameterButton_clicked()
 {
     if (curSetting == "" || curSetting == "Select option...") return;
-    else if (curSetting == "Number of axes") appSettings->
+    else if (curSetting == "Number of axes"){
+        if (ui->parameterValueLine->text().toInt() == 0) return;
+        appSettings->naxes = ui->parameterValueLine->text().toInt();
+        windowSetup();
+    }
+    toggleSettings(false);
+}
+
+void MainWindow::windowSetup()
+{
+    axesGroup.clear();
+    axesGroup.append(ui->xAxisGroup);
+    axesGroup.append(ui->yAxisGroup);
+    axesGroup.append(ui->zAxisGroup);
+    axesGroup.append(ui->aAxisGroup);
+
+    int nAxes = appSettings->getNAxes();
+
+    if (nAxes > 2) this->setMinimumSize(860,585);
+    else this->setMinimumSize(860,360);
+
+    for (auto i: axesGroup) i->setVisible(true);
+
+    for (int i = 3; i >= nAxes; --i)
+        axesGroup[i]->setVisible(false);
+
+    resize(0,0);
+}
+
+void MainWindow::updatePos()
+{
+    double xposcm = appSettings->pos[0] * appSettings->cmpr[0] / appSettings->spr[0];
+    ui->xPositionLine->setText(QString::number(xposcm, 'f', 6));
+}
+
+void MainWindow::toggleSettings(bool state)
+{
+    ui->setParameterButton->setEnabled(state);
+    ui->defaultsButton->setEnabled(state);
+    ui->openButton->setEnabled(state);
+}
+
+void MainWindow::on_settingsUnlockButton_clicked()
+{
+    if (ui->settingsPasswordLine->text() == "unlock"){
+        toggleSettings(true);
+    }
 }

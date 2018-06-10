@@ -151,20 +151,10 @@ bool MySerialPort::checkPort()
         return false;
     if (!serialPort->isOpen())
         return false;
-//    if (!serialPortInfo->isBusy()) {
-//        serialPort->close();
-////        delete serialPortInfo;
-//        return false;
-//    }
-    QByteArray data = "*connect_";
+
+    QByteArray data = "*connect_/_";
     writeData(data);
-//    try{
-//        writeData(data);
-//    }
-//    catch(QIODevice::){
-//        serialPort->close();
-//        return false;
-//    }
+
     QStringList response = getMessage();
 //    cout << response.toStdString() << endl;
     if (response[0] == "#connected") {
