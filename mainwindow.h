@@ -58,6 +58,11 @@ private:
     Ui::MainWindow *ui;
 
     QIntValidator *nAxesValidator;
+    QIntValidator *sprValidator;
+    QDoubleValidator *cmprValidator;
+    QDoubleValidator *maxvValidator;
+    QDoubleValidator *accelValidator;
+
     QString curSetting = "";
     QString curAxis = "";
 };

@@ -71,6 +71,10 @@ void MainWindow::setSettingsTab()
 
     ui->settingsUnitsnitsLabel->setVisible(false);
     nAxesValidator = new QIntValidator(1, 4, this);
+    sprValidator = new QIntValidator(1, 5000, this);
+    cmprValidator = new QDoubleValidator(0, 10, this);
+    maxvValidator = new QDoubleValidator(0, 10, this);;
+    accelValidator = new QDoubleValidator(0, 10, this);;
 
 }
 
