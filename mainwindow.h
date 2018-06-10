@@ -27,6 +27,8 @@ public:
 
     void windowSetup();
 
+
+
 private slots:
 
     void on_connectButton_clicked();
@@ -57,6 +59,8 @@ private slots:
     void on_axisBox_currentIndexChanged(const QString &arg1);
 
     void on_setParameterButton_clicked();
+
+    void updatePos();
 
 private:
     Ui::MainWindow *ui;

@@ -2,9 +2,15 @@
 #define SETTINGS_H
 
 #include <myserialport.h>
+#include <QTimer>
+#include <QObject>
+#include <QDebug>
 
 class settings : public QObject
 {
+
+    Q_OBJECT
+
 public:
     settings();
     ~settings();
@@ -28,26 +34,36 @@ public:
     void disableMotors();
     void checkSerial();
 
+
+
+
+    QTimer timer;
+
     int naxes = 4;              // number of active axes
 
+
+    // [X,Y,Z,A] axes
     double spr[4];               // steps per rotation
     double cmpr[4];              // step of moving screw (cm/rotation)
     double maxv[4];              // max velocity
     double accel[4];             // acceleration
 
+    bool limit[8] = {false};     // if limit is fired
+    bool ismoving[4];            // if stages is moving along axis
+    double pos[4];               // current possition
+
+public slots:
+    void handleTimeout();
+
+signals:
+    void newData();
 
 private:
     QString filename = "conf";  // name of configuration file
 
 
 
-    // [X,Y,Z,A] axes
 
-
-
-    bool limit[8] = {false};     // if limit is fired
-    bool ismoving[4];            // if stages is moving along axis
-    double pos[4];               // current possition
 
 
     // service methods

@@ -1,12 +1,22 @@
 #include "settings.h"
 #include <QFile>
 #include <QTextStream>
+#include <iostream>
+#include <QDebug>
 
-settings::settings()
+
+settings::settings():
+    QObject()
 {
     port = new MySerialPort(serialStatus);
 //    if (!port->getErrorMessage().isEmpty())
 //        port = NULL;
+
+    timer.setInterval(1000);
+    timer.start();
+    QObject::connect(&timer, &QTimer::timeout, this, &settings::handleTimeout);
+
+
     if (serialStatus == false){
         connectionMessage = port->getErrorMessage();
     } else {
@@ -127,13 +137,42 @@ int settings::getNAxes()
 
 void settings::monitorPort()
 {
-    checkSerial();
+//    checkSerial();
     if (serialStatus == false)
         return;
     auto message = port->getMessage();
     if (message.isEmpty())
         return;
 //    QStringList message = buffer.split(QRegExp("_"));
+    QString msg = "";
+
+//    for (auto i:message){
+//        msg = i;
+//        qDebug() << msg;
+//    }
+//    qDebug() << QString("..");
+
+    int startI = 0;
+    for (auto i:message){
+        if (i == "#connected"){
+            startI += 2;
+            break;
+        }
+        startI ++;
+    }
+
+    while (startI != 0) {
+        message.pop_front();
+        startI --;
+    }
+
+//    for (auto i:message){
+//        msg = i;
+//        qDebug() << msg;
+//    }
+//    qDebug() << QString(".......");
+
+
 
     if (message[0] == "#limiton") {
         if (message[1] == "left") {
@@ -164,7 +203,7 @@ void settings::monitorPort()
         }
     }
 
-    if (message[0] == "#currpos") {
+    if (message[0] == "\r\n#currpos") {
         if (message[1] == "x") pos[0] = message[2].toDouble();
         if (message[1] == "y") pos[1] = message[2].toDouble();
         if (message[1] == "z") pos[2] = message[2].toDouble();
@@ -184,6 +223,7 @@ void settings::monitorPort()
         if (message[1] == "z") ismoving[2] = false;
         if (message[1] == "a") ismoving[3] = false;
     }
+    emit newData();
 }
 
 void settings::goTo(short axis, double position)
@@ -201,8 +241,9 @@ void settings::goTo(short axis, double position)
     if (axis == 1) msg.append("*ymove_");
     if (axis == 2) msg.append("*zmove_");
     if (axis == 3) msg.append("*amove_");
-    msg.append(QString::number(nsteps));
-    msg.append("_");
+    msg.append(QString::number(nsteps,'i',0));
+    msg.append("_/_");
+    timer.start();
     port->writeData(msg.toLocal8Bit());
     return;
 }
@@ -250,3 +291,15 @@ void settings::checkSerial()
 {
     serialStatus = port->checkPort();
 }
+
+void settings::handleTimeout()
+{
+
+    if (!port->checkPort()){
+        timer.start();
+        return;
+    }
+    monitorPort();
+}
+
+

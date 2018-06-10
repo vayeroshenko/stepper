@@ -22,11 +22,11 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(appSettings->port->serialPort, SIGNAL(error(QSerialPort::SerialPortError)), appSettings->port, SLOT(handleError(QSerialPort::SerialPortError)));
     }
 
-//    // run in main loop
-//    auto timer = new QTimer(parent);
-//    connect(timer, &QTimer::timeout, appSettings, [this]{appSettings->monitorPort();});
-//    timer->start(10000);
-//    //
+    connect(appSettings, &settings::newData, this, &MainWindow::updatePos);
+
+
+
+
 
     if (appSettings->motorEnabled)
         ui->enableButton->setText("Disable motors");
@@ -187,4 +187,10 @@ void MainWindow::windowSetup()
         axesGroup[i]->setVisible(false);
 
     resize(0,0);
+}
+
+void MainWindow::updatePos()
+{
+    double xposcm = appSettings->pos[0] * appSettings->cmpr[0] / appSettings->spr[0];
+    ui->xPositionLine->setText(QString::number(xposcm, 'f', 6));
 }
