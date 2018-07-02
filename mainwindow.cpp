@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setSettingsTab();
 
-    resize(0,0);
+//    resize(0,0);
 }
 
 MainWindow::~MainWindow()
