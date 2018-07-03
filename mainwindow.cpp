@@ -85,21 +85,21 @@ void MainWindow::on_xStartButton_clicked()
 
 void MainWindow::on_yStartButton_clicked()
 {
-    if (ui->xDestinationLine->text().isEmpty())
+    if (ui->yDestinationLine->text().isEmpty())
         return;
     appSettings->goTo(1,ui->yDestinationLine->text().toDouble());
 }
 
 void MainWindow::on_zStartButton_clicked()
 {
-    if (ui->xDestinationLine->text().isEmpty())
+    if (ui->zDestinationLine->text().isEmpty())
         return;
     appSettings->goTo(2,ui->zDestinationLine->text().toDouble());
 }
 
 void MainWindow::on_aStartButton_clicked()
 {
-    if (ui->xDestinationLine->text().isEmpty())
+    if (ui->aDestinationLine->text().isEmpty())
         return;
     appSettings->goTo(3,ui->aDestinationLine->text().toDouble());
 }
@@ -224,4 +224,34 @@ void MainWindow::on_settingsUnlockButton_clicked()
     if (ui->settingsPasswordLine->text() == "unlock"){
         toggleSettings(true);
     }
+}
+
+
+
+void MainWindow::on_xSetPositionButton_clicked()
+{
+    if (ui->xPositionLine->text().isEmpty())
+        return;
+    appSettings->setPos(0,ui->xPositionLine->text().toDouble());
+}
+
+void MainWindow::on_ySetPositionButton_clicked()
+{
+    if (ui->yPositionLine->text().isEmpty())
+        return;
+    appSettings->setPos(1,ui->yPositionLine->text().toDouble());
+}
+
+void MainWindow::on_zSetPositionButton_clicked()
+{
+    if (ui->zPositionLine->text().isEmpty())
+        return;
+    appSettings->setPos(2,ui->zPositionLine->text().toDouble());
+}
+
+void MainWindow::on_aSetPositionButton_clicked()
+{
+    if (ui->aPositionLine->text().isEmpty())
+        return;
+    appSettings->setPos(3,ui->aPositionLine->text().toDouble());
 }

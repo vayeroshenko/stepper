@@ -67,6 +67,14 @@ private slots:
     void on_settingsUnlockButton_clicked();
     void updatePlaceholder();
 
+    void on_xSetPositionButton_clicked();
+
+    void on_ySetPositionButton_clicked();
+
+    void on_zSetPositionButton_clicked();
+
+    void on_aSetPositionButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
