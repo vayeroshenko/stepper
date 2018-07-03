@@ -28,6 +28,7 @@ public:
 
     void monitorPort();
     void goTo(short axis, double position);
+    void setPos(short axis, double position);
     void stop(short axis);
     void setup();
     void enableMotors();

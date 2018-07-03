@@ -249,6 +249,23 @@ void settings::goTo(short axis, double position)
     return;
 }
 
+void settings::setPos(short axis, double position)
+{
+    if (!serialStatus)
+        return;
+    double nsteps = position/cmpr[axis]*spr[axis];
+    QString msg = "";
+    if (axis == 0) msg.append("*xcurpos_");
+    if (axis == 1) msg.append("*ycurpos_");
+    if (axis == 2) msg.append("*zcurpos_");
+    if (axis == 3) msg.append("*acurpos_");
+    msg.append(QString::number(nsteps,'i',0));
+    msg.append("_/_");
+    timer.start();
+    port->writeData(msg.toLocal8Bit());
+    return;
+}
+
 void settings::setup()
 {
     QString msg = "";
