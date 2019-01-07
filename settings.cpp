@@ -11,10 +11,14 @@ settings::settings():
     port = new MySerialPort(serialStatus);
 //    if (!port->getErrorMessage().isEmpty())
 //        port = NULL;
+    timerSec.setInterval(2000);
+    timerSec.start();
+    QObject::connect(&timerSec, &QTimer::timeout, this, &settings::checkSerial);
 
     timer.setInterval(1000);
     timer.start();
     QObject::connect(&timer, &QTimer::timeout, this, &settings::handleTimeout);
+
 
 
     if (serialStatus == false){
@@ -138,19 +142,31 @@ int settings::getNAxes()
 void settings::monitorPort()
 {
 //    checkSerial();
+
     if (serialStatus == false)
+//        qDebug() << connectionMessage;
         return;
     auto message = port->getMessage();
+
+    qDebug() << "********* message from monitorPort() ***********";
+    for (auto i:message)
+        qDebug() << i;
+    qDebug() << "************************************************";
+
+
+
     if (message.isEmpty())
+        qDebug() << "EMPTY";
         return;
 //    QStringList message = buffer.split(QRegExp("_"));
     QString msg = "";
 
-//    for (auto i:message){
-//        msg = i;
-//        qDebug() << msg;
-//    }
-//    qDebug() << QString("..");
+    qDebug() << "_______ message of monitorPort() ______";
+    for (auto i:message){
+        msg = i;
+        qDebug() << msg;
+    }
+    qDebug() << "_______________________________________";
 
     int startI = 0;
     for (auto i:message){
@@ -204,11 +220,16 @@ void settings::monitorPort()
         }
     }
 
+//    if (message[0] == "\r\n#currpos") {
+//        if (message[1] == "x") pos[0] = message[2].toDouble();
+////        qDebug() << QString::number(message[2].toDouble(), 'f', 4);
+//        if (message[1] == "y") pos[1] = message[2].toDouble();
+//        if (message[1] == "z") pos[2] = message[2].toDouble();
+//        if (message[1] == "a") pos[3] = message[2].toDouble();
+//    }
+
     if (message[0] == "\r\n#currpos") {
-        if (message[1] == "x") pos[0] = message[2].toDouble();
-        if (message[1] == "y") pos[1] = message[2].toDouble();
-        if (message[1] == "z") pos[2] = message[2].toDouble();
-        if (message[1] == "a") pos[3] = message[2].toDouble();
+        for (int i = 0; i < 4; ++i) pos[i] = message[i+1].toDouble();
     }
 
     if (message[0] == "#started") {
@@ -308,16 +329,22 @@ void settings::disableMotors()
 void settings::checkSerial()
 {
     serialStatus = port->checkPort();
+    timerSec.start();
+    timer.start();
 }
 
 void settings::handleTimeout()
 {
 
-    if (!port->checkPort()){
-        timer.start();
-        return;
-    }
+//    if (!port->checkPort()){
+//        timer.start();
+//        return;
+//    }
+    qDebug() << "HELLO";
     monitorPort();
+    monitorPort();
+    timer.start();
+//    timerSec.start();
 }
 
 

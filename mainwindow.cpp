@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <QTimer>
+#include <QDebug>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -208,8 +209,16 @@ void MainWindow::windowSetup()
 
 void MainWindow::updatePos()
 {
-    double xposcm = appSettings->pos[0] * appSettings->cmpr[0] / appSettings->spr[0];
-    ui->xPositionLine->setText(QString::number(xposcm, 'f', 6));
+//    double xposcm = appSettings->pos[0] * appSettings->cmpr[0] / appSettings->spr[0];
+    double xposcm = appSettings->pos[0];
+    ui->xPositionLine->setPlaceholderText(QString::number(xposcm, 'f', 4));
+//    qDebug() << QString::number(xposcm, 'f', 4);
+    double yposcm = appSettings->pos[1] * appSettings->cmpr[1] / appSettings->spr[1];
+    ui->yPositionLine->setPlaceholderText(QString::number(yposcm, 'f', 4));
+    double zposcm = appSettings->pos[2] * appSettings->cmpr[2] / appSettings->spr[2];
+    ui->zPositionLine->setPlaceholderText(QString::number(zposcm, 'f', 4));
+    double aposcm = appSettings->pos[3] * appSettings->cmpr[3] / appSettings->spr[3];
+    ui->aPositionLine->setPlaceholderText(QString::number(aposcm, 'f', 4));
 }
 
 void MainWindow::toggleSettings(bool state)
@@ -233,6 +242,7 @@ void MainWindow::on_xSetPositionButton_clicked()
     if (ui->xPositionLine->text().isEmpty())
         return;
     appSettings->setPos(0,ui->xPositionLine->text().toDouble());
+    ui->xPositionLine->setText("");
 }
 
 void MainWindow::on_ySetPositionButton_clicked()
@@ -240,6 +250,7 @@ void MainWindow::on_ySetPositionButton_clicked()
     if (ui->yPositionLine->text().isEmpty())
         return;
     appSettings->setPos(1,ui->yPositionLine->text().toDouble());
+    ui->yPositionLine->setText("");
 }
 
 void MainWindow::on_zSetPositionButton_clicked()
@@ -247,6 +258,7 @@ void MainWindow::on_zSetPositionButton_clicked()
     if (ui->zPositionLine->text().isEmpty())
         return;
     appSettings->setPos(2,ui->zPositionLine->text().toDouble());
+    ui->zPositionLine->setText("");
 }
 
 void MainWindow::on_aSetPositionButton_clicked()
@@ -254,4 +266,5 @@ void MainWindow::on_aSetPositionButton_clicked()
     if (ui->aPositionLine->text().isEmpty())
         return;
     appSettings->setPos(3,ui->aPositionLine->text().toDouble());
+    ui->zPositionLine->setText("");
 }

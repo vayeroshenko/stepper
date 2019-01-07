@@ -39,6 +39,7 @@ public:
 
 
     QTimer timer;
+    QTimer timerSec;
 
     int naxes = 4;              // number of active axes
 

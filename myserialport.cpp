@@ -2,6 +2,7 @@
 
 
 #include <QObject>
+#include <QDebug>
 
 
 using namespace std;
@@ -114,7 +115,16 @@ QStringList MySerialPort::getMessage(QSerialPort *serial)
                 slice = i;
             }
         }
-        if (!fullmsg) getMessage(serial);
+
+        qDebug() << "!!!!!! msgQueue from getMessage() !!!!!!!!";
+        for (auto i:msgQueue)
+            qDebug() << i;
+        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+
+        if (!fullmsg){
+            qDebug() << "MESSAGE IS NOT FULL";
+            getMessage(serial);
+        }
         if (slice != 0) {
             for (int i = 0; i <= slice; ++i) {
                 outMessage.append(msgQueue[0]);
@@ -122,6 +132,11 @@ QStringList MySerialPort::getMessage(QSerialPort *serial)
             }
         }
     }
+    qDebug() << "!!!!!! outMessage from getMessage() !!!!!!!!";
+    for (auto i:outMessage)
+        qDebug() << i;
+    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+
     return outMessage;
 }
 
