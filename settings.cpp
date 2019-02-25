@@ -146,6 +146,7 @@ void settings::monitorPort()
     if (serialStatus == false)
 //        qDebug() << connectionMessage;
         return;
+    port->clearMessage();
     auto message = port->getMessage();
 
     qDebug() << "********* message from monitorPort() ***********";

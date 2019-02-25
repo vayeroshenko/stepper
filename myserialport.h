@@ -5,6 +5,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QObject>
 #include <QThread>
+#include <QQueue>
 
 
 #include <iostream>
@@ -24,6 +25,7 @@ public:
     QStringList getMessage();
     QString getErrorMessage();
     bool checkPort();
+    void clearMessage() {outMessage.clear();}
 
 
     QSerialPort *serialPort = NULL;
@@ -34,7 +36,9 @@ public:
 private:
     QString errorMessage = "";
 //    QByteArray messageBuffer = "";
-    QStringList msgQueue;
+    QQueue<QString> msgQueue;
+
+    QStringList outMessage;
 
     QSerialPortInfo *serialPortInfo = NULL;
 
@@ -44,6 +48,8 @@ private:
     void readData(QSerialPort *serial);
     QStringList getMessage(QSerialPort *serial);
     void setPortParameters(QSerialPort *serial);
+
+
 
 
 

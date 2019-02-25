@@ -49,22 +49,22 @@ bool MySerialPort::openSerialPort(QSerialPortInfo *serialData)
     this->writeData(serial, data);
     auto response = this->getMessage(serial);
     if (!response.isEmpty()) {
-    if (response[0] == "#connected") {
+        if (response[0] == "#connected") {
 
-//        cout << "have found nice port" << endl;
-//        serial->close();
-        serialPort = serial;
-        serialPortInfo = serialData;
-//        serialPort->setPortName("COM");
-//        setPortParameters(serialPort);
-//        cout << "have constructed the port we will work with" << endl;
-//        this->closeSerialPort(serial);
+            //        cout << "have found nice port" << endl;
+            //        serial->close();
+            serialPort = serial;
+            serialPortInfo = serialData;
+            //        serialPort->setPortName("COM");
+            //        setPortParameters(serialPort);
+            //        cout << "have constructed the port we will work with" << endl;
+            //        this->closeSerialPort(serial);
 
-        return true;
-    } else {
-        this->closeSerialPort(serial);
-        return false;
-    }
+            return true;
+        } else {
+            this->closeSerialPort(serial);
+            return false;
+        }
     }
 
     this->closeSerialPort(serial);
@@ -90,48 +90,41 @@ void MySerialPort::writeData(const QByteArray &data)
 
 void MySerialPort::readData(QSerialPort *serial)
 {
-   serial->waitForReadyRead();
-   QByteArray serialData = serial->readAll();
-//   messageBuffer.append(serialData);
-   QStringList buffer;
-   if (!serialData.isEmpty()){
-       QString msgBuffer = serialData;
-       buffer = msgBuffer.split(QRegExp("_"));
-   }
-   msgQueue.append(buffer);
-   msgQueue.removeAll("\r\n");
+    serial->waitForReadyRead();
+    QByteArray serialData = serial->readAll();
+    //   messageBuffer.append(serialData);
+    QStringList buffer;
+    if (!serialData.isEmpty()){
+        QString msgBuffer = serialData;
+        buffer = msgBuffer.split(QRegExp("_"));
+    }
+    msgQueue.removeAll("\r\n");
+    for (QString message : buffer)
+        msgQueue.enqueue(message);
 }
 
 QStringList MySerialPort::getMessage(QSerialPort *serial)
 {
     readData(serial);
-    QStringList outMessage;
-    if (!msgQueue.isEmpty()){
-        int slice = 0;
-        bool fullmsg = false;
-        for (int i = 0; i< msgQueue.length(); ++i) {
-            if (msgQueue[i] == "/") {
-                fullmsg = true;
-                slice = i;
-            }
-        }
+    if (!msgQueue.isEmpty()) getMessage(serial);
 
-        qDebug() << "!!!!!! msgQueue from getMessage() !!!!!!!!";
-        for (auto i:msgQueue)
-            qDebug() << i;
-        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+    bool fullmsg = false;
 
-        if (!fullmsg){
-            qDebug() << "MESSAGE IS NOT FULL";
-            getMessage(serial);
-        }
-        if (slice != 0) {
-            for (int i = 0; i <= slice; ++i) {
-                outMessage.append(msgQueue[0]);
-                msgQueue.pop_front();
-            }
-        }
+    while (msgQueue.head() != "/"){
+        outMessage.append(msgQueue.dequeue());
+        fullmsg = true;
     }
+
+    qDebug() << "!!!!!! msgQueue from getMessage() !!!!!!!!";
+    for (auto i:msgQueue)
+        qDebug() << i;
+    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+
+    if (!fullmsg){
+        qDebug() << "MESSAGE IS NOT FULL";
+        getMessage(serial);
+    }
+
     qDebug() << "!!!!!! outMessage from getMessage() !!!!!!!!";
     for (auto i:outMessage)
         qDebug() << i;
@@ -148,7 +141,7 @@ QString MySerialPort::getErrorMessage()
 void MySerialPort::setPortParameters(QSerialPort *serial)
 {
 
-//    while (!serial->isOpen()) { }
+    //    while (!serial->isOpen()) { }
     serial->open(QIODevice::ReadWrite);
     serial->setBaudRate(QSerialPort::Baud9600);
     serial->setDataBits(QSerialPort::Data8);
@@ -171,7 +164,7 @@ bool MySerialPort::checkPort()
     writeData(data);
 
     QStringList response = getMessage();
-//    cout << response.toStdString() << endl;
+    //    cout << response.toStdString() << endl;
     if (response[0] == "#connected") {
         return true;
     } else {
@@ -193,5 +186,6 @@ void MySerialPort::handleError(QSerialPort::SerialPortError error)
 
     }
 }
+
 
 //#include "myserialport.moc"
